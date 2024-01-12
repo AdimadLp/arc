@@ -125,7 +125,7 @@ if __name__ == '__main__':
         epoch = int(model_path.split('_')[-1])
         batch_size = 1
 
-        train(model_path, learning_rate, batch_size, epoch, model_name=model_path.split('_')[:-3])
+        train(model_path, learning_rate, batch_size, epoch, model_name=str(model_path.split('_')[:-3]))
     else:
         model_path = 'gpt2'
         learning_rate = 2e-5
