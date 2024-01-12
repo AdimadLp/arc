@@ -105,6 +105,9 @@ def train(model_path, learning_rate, batch_size, epoch):
         # Evaluate model every epoch by generating 5 examples called from test data '0c786b71.json' and visualize them
         for i in range(1, 5+1):
             result = test_gpt2.test_model(model, tokenizer, device)
+            # Check if the result is not empty
+            if not result:
+                continue
             # Parse the JSON string to a Python list
             data = json.loads(result)
             visualize.visualize(f'arc_model_{learning_rate}_{epoch}',data, i)
