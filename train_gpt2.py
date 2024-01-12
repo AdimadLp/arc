@@ -38,7 +38,7 @@ class ArcDataset(Dataset):
     def __getitem__(self, idx):
         return self.data[idx]
 
-def train(model_path, learning_rate, epoch):
+def train(model_path, learning_rate, batch_size, epoch):
     print(f"model_path: {model_path}\nlearning_rate: {learning_rate}\nepoch: {epoch}")
     tokenizer = GPT2Tokenizer.from_pretrained(model_path)
     # Ensure that pad_token is set
@@ -59,13 +59,13 @@ def train(model_path, learning_rate, epoch):
 
     train_data = load_arc_data('training')
     train_dataset = ArcDataset(train_data, tokenizer)
-    train_loader = DataLoader(train_dataset, batch_size=1, collate_fn=collate_batch, shuffle=True)
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, collate_fn=collate_batch, shuffle=True)
     print("Taining data loaded")
 
     # Load validation data
     val_data = load_arc_data('evaluation')
     val_dataset = ArcDataset(val_data, tokenizer)
-    val_loader = DataLoader(val_dataset, batch_size=1, collate_fn=collate_batch, shuffle=False)
+    val_loader = DataLoader(val_dataset, batch_size=batch_size, collate_fn=collate_batch, shuffle=False)
     print("Evaluation data loaded")
 
     optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
@@ -120,13 +120,13 @@ if __name__ == '__main__':
         learning_rate = float(model_path.split('_')[-2])
         epoch = int(model_path.split('_')[-1])
 
-        train(model_path, learning_rate, epoch)
+        train(model_path, learning_rate, 1, epoch)
     else:
         model_path = 'gpt2'
         learning_rate = 2e-5
         epoch = 0
 
-        train(model_path, learning_rate, epoch)
+        train(model_path, learning_rate, 1, epoch)
 
     
 """
