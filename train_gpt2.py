@@ -39,7 +39,7 @@ class ArcDataset(Dataset):
         return self.data[idx]
 
 def train(model_path, learning_rate, batch_size, epoch):
-    print(f"model_path: {model_path}\nlearning_rate: {learning_rate}\nbatch_size{batch_size}\nepoch: {epoch}")
+    print(f"model_path: {model_path}\nlearning_rate: {learning_rate}\nbatch_size: {batch_size}\nepoch: {epoch}")
     tokenizer = GPT2Tokenizer.from_pretrained(model_path)
     # Ensure that pad_token is set
     tokenizer.pad_token = tokenizer.eos_token
