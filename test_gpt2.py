@@ -79,7 +79,9 @@ def test_model(model, tokenizer, device):
         except json.JSONDecodeError:
             print(f"Generated text is not JSON compatible: {generated}")
         except ValueError as e:
-            print(e)
+            print(f'{e}: {generated}')
+        except IndexError as e:
+            print(f'{e}: {generated}')
         
 if __name__ == '__main__':
     path = 'arc_model_2e-05_40'
