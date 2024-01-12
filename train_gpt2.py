@@ -39,7 +39,8 @@ class ArcDataset(Dataset):
         return self.data[idx]
 
 def train(model_path, learning_rate, batch_size, epoch, model_name=None):
-    model_name = model_name if model_name else model_path
+    if model_name is None:
+        model_name = model_path
     print(f"model_path: {model_path}\nlearning_rate: {learning_rate}\nbatch_size: {batch_size}\nepoch: {epoch}")
     tokenizer = GPT2Tokenizer.from_pretrained(model_path)
     # Ensure that pad_token is set
@@ -125,7 +126,7 @@ if __name__ == '__main__':
         epoch = int(model_path.split('_')[-1])
         batch_size = 1
 
-        train(model_path, learning_rate, batch_size, epoch, model_name=str(model_path.split('_')[:-3]))
+        train(model_path, learning_rate, batch_size, epoch, model_name=model_path.split('_')[:-3])
     else:
         model_path = 'gpt2'
         learning_rate = 2e-5
