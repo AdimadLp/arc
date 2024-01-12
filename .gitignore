@@ -1,5 +1,5 @@
 # ignore trained model directory
 /arc_model*/
-
+/gpt*/
 # ignore __pycache__ directory
 __pycache__/

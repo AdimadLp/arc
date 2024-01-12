@@ -38,7 +38,8 @@ class ArcDataset(Dataset):
     def __getitem__(self, idx):
         return self.data[idx]
 
-def train(model_path, learning_rate, batch_size, epoch):
+def train(model_path, learning_rate, batch_size, epoch, model_name=None):
+    model_name = model_name if model_name else model_path
     print(f"model_path: {model_path}\nlearning_rate: {learning_rate}\nbatch_size: {batch_size}\nepoch: {epoch}")
     tokenizer = GPT2Tokenizer.from_pretrained(model_path)
     # Ensure that pad_token is set
@@ -98,8 +99,8 @@ def train(model_path, learning_rate, batch_size, epoch):
         # Save model every 10 epochs
         if epoch % 10 == 0:
             print(f"Saving model...")
-            model.save_pretrained(f'arc_model_{learning_rate}_{epoch}')
-            tokenizer.save_pretrained(f'arc_model_{learning_rate}_{epoch}')
+            model.save_pretrained(f'{model_name}_{learning_rate}_{epoch}')
+            tokenizer.save_pretrained(f'{model_name}_{learning_rate}_{epoch}')
             print(f"Model saved")
         
         # Evaluate model every epoch by generating 5 examples called from test data '0c786b71.json' and visualize them
@@ -110,7 +111,7 @@ def train(model_path, learning_rate, batch_size, epoch):
                 continue
             # Parse the JSON string to a Python list
             data = json.loads(result)
-            visualize.visualize(f'arc_model_{learning_rate}_{epoch}',data, i)
+            visualize.visualize(f'{model_name}_{learning_rate}_{epoch}',data, i)
 
 if __name__ == '__main__':
     argParser = argparse.ArgumentParser()
@@ -124,7 +125,7 @@ if __name__ == '__main__':
         epoch = int(model_path.split('_')[-1])
         batch_size = 1
 
-        train(model_path, learning_rate, batch_size, epoch)
+        train(model_path, learning_rate, batch_size, epoch, model_name=model_path.split('_')[:-3])
     else:
         model_path = 'gpt2'
         learning_rate = 2e-5
