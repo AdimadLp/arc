@@ -26,6 +26,8 @@ Here are examples of how to use this project:
 ```bash
 # Start the traing
 python3 train_gpt2.py
+```
+```bash
 # Continue the training from checkpoint
 python3 train_gpt2.py -c FOLDERNAME
 ```
