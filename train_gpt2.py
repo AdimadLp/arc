@@ -131,7 +131,7 @@ def train(model_path, learning_rate, batch_size, epoch, model_name=None):
                 'visualizable_examples': visualizable_examples
             })
         # if the number of correct size examples or visualizable examples is higher than the previous epoch, save the model
-        elif stats[-1]['correct_size_examples'] < correct_size_examples or stats[-1]['visualizable_examples'] < visualizable_examples:
+        elif stats[-1]['correct_size_examples'] < correct_size_examples:
             stats.append({
                 'epoch': epoch,
                 'correct_size_examples': correct_size_examples,

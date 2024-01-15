@@ -12,6 +12,7 @@ def load_tokenizer(tokenizer_path):
     return tokenizer
 
 def test_model(model, tokenizer, device, temperature):
+    print(f'create test cases with temperature {temperature}')
     model.eval()
     with torch.no_grad():
         with open(os.path.join('test', '0c786b71.json'), 'r') as file:
@@ -29,7 +30,7 @@ def test_model(model, tokenizer, device, temperature):
             do_sample=True,
             max_length=1024,
             pad_token_id=model.config.eos_token_id,
-            temperature=0.7,
+            temperature=temperature,
         )
         generated = tokenizer.decode(outputs[0], skip_special_tokens=True)
         
