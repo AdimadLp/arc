@@ -21,8 +21,14 @@ Instructions on how to install and set up your project.
 
 ## Usage
 
-Examples and instructions on how to use your project.
+Here are examples of how to use this project:
 
+```bash
+# Start the traing
+python3 train_gpt2.py
+# Continue the training from checkpoint
+python3 train_gpt2.py -c FOLDERNAME
+```
 ## Contributing
 
 Guidelines for contributing to the project.
