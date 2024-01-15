@@ -38,9 +38,23 @@ class ArcDataset(Dataset):
     def __getitem__(self, idx):
         return self.data[idx]
 
-def train(model_path, learning_rate, batch_size, epoch, model_name=None):
+def train(model_path, learning_rate, batch_size, epoch, model_name=None, stats=[]):
     if model_name is None:
         model_name = model_path
+
+    if stats == []:
+        max_correct_size_tests = 0
+    else:
+        # Check if epoch exists in stats
+        epoch_exists_in_stats = any(stat['epoch'] == epoch for stat in stats)
+        # Remove all stats after the epoch
+        stats = [stat for stat in stats if stat['epoch'] <= epoch]
+        if epoch_exists_in_stats:
+            # Get the max correct size tests from stats
+            max_correct_size_tests = max([stat['correct_size_tests'] for stat in stats])
+        else:
+            raise Exception("Epoch does not match with the last epoch in stats")
+    
     print(f"model_path: {model_path}\nlearning_rate: {learning_rate}\nbatch_size: {batch_size}\nmodel_name: {model_name}\nepoch: {epoch}")
     tokenizer = GPT2Tokenizer.from_pretrained(model_path)
     # Ensure that pad_token is set
@@ -74,7 +88,6 @@ def train(model_path, learning_rate, batch_size, epoch, model_name=None):
 
     # Train model
     print("Start training...")
-    stats = []
     while True:  # Number of epochs
         model.train()
 
@@ -98,13 +111,13 @@ def train(model_path, learning_rate, batch_size, epoch, model_name=None):
         epoch += 1
         print(f"Epoch {epoch} completed with loss {loss.item()}")
 
-        visualizable_examples = 0
-        correct_size_examples = 0
+        visualizable_tests = 0
+        correct_size_tests = 0
         
-        # Evaluate model every epoch by generating 5 examples called from test data '0c786b71.json' and visualize them
-        temperature = 0.0
+        # Evaluate model every epoch by generating 5 tests called from test data '0c786b71.json' and visualize them
+        temperature = 0.1
 
-        for l in range(1, 11+1):
+        for l in range(1, 10+1):
                 for i in range(1, 3+1):
                             result = test_gpt2.test_model(model, tokenizer, device, temperature)
 
@@ -114,10 +127,10 @@ def train(model_path, learning_rate, batch_size, epoch, model_name=None):
                             elif result == 'invalid x-axis size':
                                 continue
                             elif result == 'invalid y-axis size':
-                                visualizable_examples += 1
+                                visualizable_tests += 1
                             else:
-                                correct_size_examples += 1
-                                visualizable_examples += 1
+                                correct_size_tests += 1
+                                visualizable_tests += 1
                                 # Visualize the result
                                 data = json.loads(result)
                                 visualize.heatmap(f"{model_name}_{learning_rate}_{epoch}", data, round(temperature,2), i)
@@ -127,15 +140,16 @@ def train(model_path, learning_rate, batch_size, epoch, model_name=None):
         if stats == []:
             stats.append({
                 'epoch': epoch,
-                'correct_size_examples': correct_size_examples,
-                'visualizable_examples': visualizable_examples
+                'correct_size_tests': correct_size_tests,
+                'visualizable_tests': visualizable_tests
             })
-        # if the number of correct size examples or visualizable examples is higher than the previous epoch, save the model
-        elif stats[-1]['correct_size_examples'] < correct_size_examples:
+        # if the number of correct size tests or visualizable tests is higher than the previous epoch, save the model
+        elif max_correct_size_tests < correct_size_tests:
+            max_correct_size_tests = correct_size_tests
             stats.append({
                 'epoch': epoch,
-                'correct_size_examples': correct_size_examples,
-                'visualizable_examples': visualizable_examples
+                'correct_size_tests': correct_size_tests,
+                'visualizable_tests': visualizable_tests
             })
             # Save model
             print(f"Saving model...")
@@ -145,16 +159,18 @@ def train(model_path, learning_rate, batch_size, epoch, model_name=None):
         else:
             stats.append({
                 'epoch': epoch,
-                'correct_size_examples': correct_size_examples,
-                'visualizable_examples': visualizable_examples
+                'correct_size_tests': correct_size_tests,
+                'visualizable_tests': visualizable_tests
             })
+
+        # Visualize stats
+        visualize.graph(model_name, learning_rate, stats)
+        visualize.avg_graph(model_name, learning_rate, stats)
+
         os.makedirs(f'stats', exist_ok=True)
         # Save stats
         with open(f'stats/{model_name}_{learning_rate}.json', 'w') as file:
             json.dump(stats, file)
-        
-        # Visualize stats
-        visualize.graph(model_name, learning_rate)
             
 
 if __name__ == '__main__':
@@ -169,8 +185,11 @@ if __name__ == '__main__':
         batch_size = 1
         parent_model = ''.join(model_path.split('_')[:-2])
         epoch = int(model_path.split('_')[-1])
+        # Load stats
+        with open(f'stats/{parent_model}_{learning_rate}.json', 'r') as file:
+            stats = json.load(file)
 
-        train(model_path, learning_rate, batch_size, epoch, model_name=parent_model)
+        train(model_path, learning_rate, batch_size, epoch, model_name=parent_model, stats=stats)
     else:
         model_path = 'gpt2'
         learning_rate = 2e-5

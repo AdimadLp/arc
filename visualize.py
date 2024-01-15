@@ -3,6 +3,9 @@ import matplotlib.pyplot as plt
 import json
 import os
 import test_gpt2
+import numpy as np
+import seaborn as sns
+import pandas as pd
 
 def heatmap(graph_name, data, temperature, iteration=1):
     print(f"Visualizing example {iteration} of model {graph_name} with temperature {temperature}")
@@ -36,37 +39,33 @@ def heatmap(graph_name, data, temperature, iteration=1):
     # Close the figure
     plt.close(figure)
 
-def graph(model_name, learning_rate):
+def graph(model_name, learning_rate, stats):
     print(f"Visualizing stats of model {model_name}")
-    with open(f'stats/{model_name}_{learning_rate}.json', 'r') as file:
-        stats = json.load(file)
-    # Create a figure
-    figure, axis = plt.subplots(1, 2)
 
     # Create a list of epochs
     epochs = [stat['epoch'] for stat in stats]
-    # Create a list of correct size examples
-    correct_size_examples = [stat['correct_size_examples'] for stat in stats]
-    # Create a list of visualizable examples
-    visualizable_examples = [stat['visualizable_examples'] for stat in stats]
+    # Create a list of correct size tests
+    correct_size_tests = [stat['correct_size_tests'] for stat in stats]
+    # Create a list of visualizable tests
+    visualizable_tests = [stat['visualizable_tests'] for stat in stats]
 
     # Create a figure and a set of subplots
     fig, ax = plt.subplots()
 
-    # Plot the data for correct size examples
-    ax.plot(epochs, correct_size_examples, color='blue', label='Correct size examples')
+    # Plot the data for correct size tests
+    ax.plot(epochs, correct_size_tests, color='blue', label='Correct size tests')
 
-    # Plot the data for visualizable examples
-    ax.plot(epochs, visualizable_examples, color='red', label='Visualizable examples')
+    # Plot the data for visualizable tests
+    ax.plot(epochs, visualizable_tests, color='red', label='Visualizable tests')
 
     # Set the title
-    ax.set_title("Correct Size vs Visualizable Examples")
+    ax.set_title("Correct Size vs Visualizable tests")
 
     # Set the x-axis label
     ax.set_xlabel("Epoch")
 
     # Set the y-axis label
-    ax.set_ylabel("Examples")
+    ax.set_ylabel("tests")
 
     # Add a legend
     ax.legend()
@@ -78,10 +77,65 @@ def graph(model_name, learning_rate):
     # Close the figure
     plt.close(fig)
 
+def avg_graph(model_name, learning_rate, stats):
+    print(f"Visualizing stats of model {model_name}")
+
+    # Create a list of epochs
+    epochs = [stat['epoch'] for stat in stats]
+    # Create a list of correct size tests
+    correct_size_tests = [stat['correct_size_tests'] for stat in stats]
+    # Create a list of visualizable tests
+    visualizable_tests = [stat['visualizable_tests'] for stat in stats]
+    # Calculate the difference between visualizable_tests and correct_size_tests
+    difference = np.array(visualizable_tests) - np.array(correct_size_tests)
+
+    def moving_average(a, n=3) :
+        ret = np.cumsum(a, dtype=float)
+        ret[n:] = ret[n:] - ret[:-n]
+        return ret[n - 1:] / n
+    
+    # Calculate the moving averages
+    correct_size_tests_avg = moving_average(correct_size_tests)
+    visualizable_tests_avg = moving_average(visualizable_tests)
+    difference_avg = moving_average(difference)
+
+    # Adjust epochs for moving average
+    epochs_avg = epochs[len(epochs) - len(correct_size_tests_avg):]
+
+    # Create a figure and a set of subplots
+    fig, ax = plt.subplots()
+
+    # Plot the moving averages
+    ax.plot(epochs_avg, correct_size_tests_avg, color='blue', label='Correct size tests (avg)')
+    ax.plot(epochs_avg, visualizable_tests_avg, color='red', label='Visualizable tests (avg)')
+    ax.plot(epochs_avg, difference_avg, color='purple', label='Difference between correct size and visualizable tests (avg)')
+
+    # Set the title
+    ax.set_title("Moving Average of Model Performance Metrics Over Epochs")
+
+    # Set the x-axis label
+    ax.set_xlabel("Epoch")
+
+    # Set the y-axis label
+    ax.set_ylabel("tests")
+
+    # Add a legend
+    ax.legend()
+
+    # Save the figure
+    os.makedirs(f'stats', exist_ok=True)
+    plt.savefig(f'stats/{model_name}_{learning_rate}_avg.png')
+
+    # Close the figure
+    plt.close(fig)
+
 if __name__ == '__main__':
     model_path = 'gpt2'
     learning_rate = 2e-05
-    graph(model_path, learning_rate)
+    with open(f'stats/{model_path}_{learning_rate}.json', 'r') as file:
+        stats = json.load(file)
+    graph(model_path, learning_rate, stats)
+    avg_graph(model_path, learning_rate, stats)
 
 """
     top_k = 30
