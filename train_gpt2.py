@@ -41,7 +41,7 @@ class ArcDataset(Dataset):
 def train(model_path, learning_rate, batch_size, epoch, model_name=None):
     if model_name is None:
         model_name = model_path
-    print(f"model_path: {model_path}\nlearning_rate: {learning_rate}\nbatch_size: {batch_size}\nepoch: {epoch}")
+    print(f"model_path: {model_path}\nlearning_rate: {learning_rate}\nbatch_size: {batch_size}\nmodel_name: {model_name}\nepoch: {epoch}")
     tokenizer = GPT2Tokenizer.from_pretrained(model_path)
     # Ensure that pad_token is set
     tokenizer.pad_token = tokenizer.eos_token
@@ -74,6 +74,7 @@ def train(model_path, learning_rate, batch_size, epoch, model_name=None):
 
     # Train model
     print("Start training...")
+    stats = []
     while True:  # Number of epochs
         model.train()
 
@@ -97,22 +98,64 @@ def train(model_path, learning_rate, batch_size, epoch, model_name=None):
         epoch += 1
         print(f"Epoch {epoch} completed with loss {loss.item()}")
 
-        # Save model every 10 epochs
-        if epoch % 10 == 0:
+        visualizable_examples = 0
+        correct_size_examples = 0
+        
+        # Evaluate model every epoch by generating 5 examples called from test data '0c786b71.json' and visualize them
+        temperature = 0.0
+
+        for l in range(1, 11+1):
+                for i in range(1, 3+1):
+                            result = test_gpt2.test_model(model, tokenizer, device, temperature)
+
+                            # Check if the result is not empty
+                            if result == 'invalid output':
+                                continue
+                            elif result == 'invalid x-axis size':
+                                continue
+                            elif result == 'invalid y-axis size':
+                                visualizable_examples += 1
+                            else:
+                                correct_size_examples += 1
+                                visualizable_examples += 1
+                                # Visualize the result
+                                data = json.loads(result)
+                                visualize.heatmap(f"{model_name}_{learning_rate}_{epoch}", data, round(temperature,2), i)
+                                
+                temperature += 0.1
+        # first epoch
+        if stats == []:
+            stats.append({
+                'epoch': epoch,
+                'correct_size_examples': correct_size_examples,
+                'visualizable_examples': visualizable_examples
+            })
+        # if the number of correct size examples or visualizable examples is higher than the previous epoch, save the model
+        elif stats[-1]['correct_size_examples'] < correct_size_examples or stats[-1]['visualizable_examples'] < visualizable_examples:
+            stats.append({
+                'epoch': epoch,
+                'correct_size_examples': correct_size_examples,
+                'visualizable_examples': visualizable_examples
+            })
+            # Save model
             print(f"Saving model...")
             model.save_pretrained(f'{model_name}_{learning_rate}_{epoch}')
             tokenizer.save_pretrained(f'{model_name}_{learning_rate}_{epoch}')
             print(f"Model saved")
+        else:
+            stats.append({
+                'epoch': epoch,
+                'correct_size_examples': correct_size_examples,
+                'visualizable_examples': visualizable_examples
+            })
+        os.makedirs(f'stats', exist_ok=True)
+        # Save stats
+        with open(f'stats/{model_name}_{learning_rate}.json', 'w') as file:
+            json.dump(stats, file)
         
-        # Evaluate model every epoch by generating 5 examples called from test data '0c786b71.json' and visualize them
-        for i in range(1, 5+1):
-            result = test_gpt2.test_model(model, tokenizer, device)
-            # Check if the result is not empty
-            if not result:
-                continue
-            # Parse the JSON string to a Python list
-            data = json.loads(result)
-            visualize.visualize(f'{model_name}_{learning_rate}_{epoch}',data, i)
+        # Visualize stats
+        visualize.graph(model_name, learning_rate)
+            
 
 if __name__ == '__main__':
     argParser = argparse.ArgumentParser()
@@ -123,10 +166,11 @@ if __name__ == '__main__':
     if args.continue_training:
         model_path = args.continue_training
         learning_rate = float(model_path.split('_')[-2])
-        epoch = int(model_path.split('_')[-1])
         batch_size = 1
+        parent_model = ''.join(model_path.split('_')[:-2])
+        epoch = int(model_path.split('_')[-1])
 
-        train(model_path, learning_rate, batch_size, epoch, model_name=model_path.split('_')[:-3])
+        train(model_path, learning_rate, batch_size, epoch, model_name=parent_model)
     else:
         model_path = 'gpt2'
         learning_rate = 2e-5

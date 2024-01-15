@@ -11,7 +11,7 @@ def load_tokenizer(tokenizer_path):
     tokenizer = GPT2Tokenizer.from_pretrained(tokenizer_path)
     return tokenizer
 
-def test_model(model, tokenizer, device):
+def test_model(model, tokenizer, device, temperature):
     model.eval()
     with torch.no_grad():
         with open(os.path.join('test', '0c786b71.json'), 'r') as file:
@@ -29,20 +29,22 @@ def test_model(model, tokenizer, device):
             do_sample=True,
             max_length=1024,
             pad_token_id=model.config.eos_token_id,
-            top_k=50,
-            top_p=0.95,
+            temperature=0.7,
         )
         generated = tokenizer.decode(outputs[0], skip_special_tokens=True)
         
-        def convert_to_json(result):
+        def evaluate(result):
             # Split the result string into separate data points
             data_points = result.split("\n")
 
             # Initialize an empty list to store the data
             data = []
 
+            # size of the first output array
+            x_axis_size = 0
+            y_axis_size = 0
             # Iterate over the data points, exccept the last one which is not a valid data point
-            for data_point in data_points:
+            for i, data_point in enumerate(data_points):
                 # Split the data point into input and output parts
                 parts = data_point.split(" Output: ")
                 input_part = parts[0].replace("Input: ", "")
@@ -52,14 +54,18 @@ def test_model(model, tokenizer, device):
                 input_data = json.loads(input_part)
                 output_data = json.loads(output_part)
 
-                # check if all inputs and all outputs have the same length
-                if not all(len(x) == len(input_data[0]) for x in input_data):
-                    # throw exception if not
-                    raise ValueError(f"Input data has different lengths: {input_data}")
-                
-                if not all(len(x) == len(output_data[0]) for x in output_data):
-                    raise ValueError(f"Output data has different lengths: {output_data}")
-
+                # set the size of the first output array
+                if i == 0:
+                    x_axis_size = len(output_data[0])
+                    y_axis_size = len(output_data)
+                else:
+                    # check if x-axis is the same size
+                    if not all(len(x) == x_axis_size for x in output_data):
+                        return 'invalid x-axis size'
+                    # check if y-axis is the same size
+                    if not len(output_data) == y_axis_size:
+                        return 'invalid y-axis size'
+                    
                 # Create a dictionary with the input and output data
                 data_dict = {
                     "input": input_data,
@@ -75,16 +81,16 @@ def test_model(model, tokenizer, device):
             return json_data
         
         try:
-            return convert_to_json(generated)
-        except json.JSONDecodeError:
-            print(f"Generated text is not JSON compatible: {generated}")
+            return evaluate(generated)
+        except json.decoder.JSONDecodeError:
+            return 'invalid output'
         except ValueError as e:
-            print(f'{e}: {generated}')
+            return 'invalid output'
         except IndexError as e:
-            print(f'{e}: {generated}')
+            return 'invalid output'
         
 if __name__ == '__main__':
-    path = 'arc_model_2e-05_40'
+    path = 'gpt2_2e-05_240'
     device = torch.device("cpu")
     model = load_model(path).to(device)
     tokenizer = load_tokenizer(path)

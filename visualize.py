@@ -4,9 +4,8 @@ import json
 import os
 import test_gpt2
 
-def visualize(model_path, data, iteration=1):
-    print(f"Visualizing example {iteration} of model {model_path}")
-    os.makedirs(f'plots/{model_path}', exist_ok=True)
+def heatmap(graph_name, data, temperature, iteration=1):
+    print(f"Visualizing example {iteration} of model {graph_name} with temperature {temperature}")
 
     figure, axis = plt.subplots(len(data), 2)
     # Iterate over each item in the data list
@@ -30,16 +29,73 @@ def visualize(model_path, data, iteration=1):
         axis[i, 1].set_xticks([])
         axis[i, 1].set_yticks([])
 
-    # Display the output heatmap 
-    plt.savefig(f'plots/{model_path}/test_{iteration}.png')
+    # Save the output heatmap
+    os.makedirs(f'plots/{graph_name}', exist_ok=True)
+    plt.savefig(f'plots/{graph_name}/test_{temperature}_{iteration}.png')
+    
+    # Close the figure
+    plt.close(figure)
+
+def graph(model_name, learning_rate):
+    print(f"Visualizing stats of model {model_name}")
+    with open(f'stats/{model_name}_{learning_rate}.json', 'r') as file:
+        stats = json.load(file)
+    # Create a figure
+    figure, axis = plt.subplots(1, 2)
+
+    # Create a list of epochs
+    epochs = [stat['epoch'] for stat in stats]
+    # Create a list of correct size examples
+    correct_size_examples = [stat['correct_size_examples'] for stat in stats]
+    # Create a list of visualizable examples
+    visualizable_examples = [stat['visualizable_examples'] for stat in stats]
+
+    # Create a figure and a set of subplots
+    fig, ax = plt.subplots()
+
+    # Plot the data for correct size examples
+    ax.plot(epochs, correct_size_examples, color='blue', label='Correct size examples')
+
+    # Plot the data for visualizable examples
+    ax.plot(epochs, visualizable_examples, color='red', label='Visualizable examples')
+
+    # Set the title
+    ax.set_title("Correct Size vs Visualizable Examples")
+
+    # Set the x-axis label
+    ax.set_xlabel("Epoch")
+
+    # Set the y-axis label
+    ax.set_ylabel("Examples")
+
+    # Add a legend
+    ax.legend()
+
+    # Save the figure
+    os.makedirs(f'stats', exist_ok=True)
+    plt.savefig(f'stats/{model_name}_{learning_rate}.png')
+
+    # Close the figure
+    plt.close(fig)
 
 if __name__ == '__main__':
-    model_path = 'arc_model_2e-05_70'
-    device = torch.device("cuda")
-    model = test_gpt2.load_model(model_path).to(device)
-    tokenizer = test_gpt2.load_tokenizer(model_path)
+    model_path = 'gpt2'
+    learning_rate = 2e-05
+    graph(model_path, learning_rate)
 
-    result = test_gpt2.test_model(model, tokenizer, device)
-    # Parse the JSON string to a Python list
-    data = json.loads(result)
-    visualize(model_path, data)
+"""
+    top_k = 30
+    for k in range(1, 6+1):
+        top_p = 0.90
+        for l in range(1, 5+1):
+            for i in range(1, 5+1):
+                        result = test_gpt2.test_model(model, tokenizer, device, top_k=top_k, top_p=top_p)
+                        # Check if the result is not empty
+                        if not result:
+                            continue
+                        # Parse the JSON string to a Python list
+                        data = json.loads(result)
+                        visualize(model_path,data, i, top_k=top_k, top_p=top_p)
+            top_p += 0.01
+        top_k += 5
+"""
