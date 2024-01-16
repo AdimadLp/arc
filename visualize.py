@@ -92,7 +92,7 @@ def avg_graph(model_name, learning_rate, stats):
     def moving_average(data) :
         # Compute the window size as a percentage of the total number of data points
         print(len(data))
-        window_size = int(len(data) * 0.4)
+        window_size = int(len(data) * 0.1)
         if window_size == 0:
             window_size = 1
         print(window_size)
