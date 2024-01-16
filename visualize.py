@@ -89,11 +89,12 @@ def avg_graph(model_name, learning_rate, stats):
     # Calculate the difference between visualizable_tests and correct_size_tests
     difference = np.array(visualizable_tests) - np.array(correct_size_tests)
 
-    def moving_average(data, window_size=2) :
+    def moving_average(data) :
         # Compute the window size as a percentage of the total number of data points
         print(len(data))
         window_size = int(len(data) * 0.4)
-        window_size = min(window_size, len(data))
+        if window_size == 0:
+            window_size = 1
         print(window_size)
         return np.convolve(data, np.ones(window_size), 'valid') / window_size
     
