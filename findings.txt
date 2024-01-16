@@ -1,0 +1,4 @@
+
+
+- bigger model better results?
+- lower learning rate better?
