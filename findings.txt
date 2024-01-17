@@ -1,4 +1,8 @@
-
-
+- no correct results, therefore only the sizes of the results are considered
+- sometimes words at the beginning of the training
+- different test result sizes
+- strong fluctuations in the model results during training
+- the result improves with more training, up to epoch 62 with a learning rate of 2e-05
+- Phases with bad results over a period of epochs
+- lower learning rate is better
 - bigger model better results?
-- lower learning rate better?

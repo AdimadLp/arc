@@ -38,22 +38,18 @@ class ArcDataset(Dataset):
     def __getitem__(self, idx):
         return self.data[idx]
 
-def train(model_path, learning_rate, batch_size, epoch, model_name=None, stats=[]):
+def train(model_path, learning_rate, batch_size, model_name=None, stats=[]):
     if model_name is None:
         model_name = model_path
 
     if stats == []:
+        epoch = 0
         max_correct_size_tests = 0
     else:
-        # Check if epoch exists in stats
-        epoch_exists_in_stats = any(stat['epoch'] == epoch for stat in stats)
-        # Remove all stats after the epoch
-        stats = [stat for stat in stats if stat['epoch'] <= epoch]
-        if epoch_exists_in_stats:
-            # Get the max correct size tests from stats
-            max_correct_size_tests = max([stat['correct_size_tests'] for stat in stats])
-        else:
-            raise Exception("Epoch does not match with the last epoch in stats")
+        # Get the last epoch from stats
+        epoch = stats[-1]['epoch']
+        # Get the max correct size tests from stats
+        max_correct_size_tests = max([stat['correct_size_tests'] for stat in stats])
     
     print(f"model_path: {model_path}\nlearning_rate: {learning_rate}\nbatch_size: {batch_size}\nmodel_name: {model_name}\nepoch: {epoch}")
     tokenizer = GPT2Tokenizer.from_pretrained(model_path)
@@ -151,17 +147,18 @@ def train(model_path, learning_rate, batch_size, epoch, model_name=None, stats=[
                 'correct_size_tests': correct_size_tests,
                 'visualizable_tests': visualizable_tests
             })
-            # Save model
-            print(f"Saving model...")
-            model.save_pretrained(f'{model_name}_{learning_rate}_{epoch}')
-            tokenizer.save_pretrained(f'{model_name}_{learning_rate}_{epoch}')
-            print(f"Model saved")
         else:
             stats.append({
                 'epoch': epoch,
                 'correct_size_tests': correct_size_tests,
                 'visualizable_tests': visualizable_tests
             })
+
+        # Save model
+        print(f"Saving model...")
+        model.save_pretrained(f'{model_name}_{learning_rate}')
+        tokenizer.save_pretrained(f'{model_name}_{learning_rate}')
+        print(f"Model saved")
 
         # Visualize stats
         visualize.graph(model_name, learning_rate, stats)
@@ -181,21 +178,19 @@ if __name__ == '__main__':
 
     if args.continue_training:
         model_path = args.continue_training
-        learning_rate = float(model_path.split('_')[-2])
+        learning_rate = float(model_path.split('_')[-1])
         batch_size = 1
-        parent_model = ''.join(model_path.split('_')[:-2])
-        epoch = int(model_path.split('_')[-1])
+        parent_model = ''.join(model_path.split('_')[0])
         # Load stats
         with open(f'stats/{parent_model}_{learning_rate}.json', 'r') as file:
             stats = json.load(file)
 
-        train(model_path, learning_rate, batch_size, epoch, model_name=parent_model, stats=stats)
+        train(model_path, learning_rate, batch_size, model_name=parent_model, stats=stats)
     else:
         model_path = 'gpt2'
-        learning_rate = 2e-5
-        epoch = 0
+        learning_rate = 5e-5
         batch_size = 1
-        train(model_path, learning_rate, batch_size, epoch)
+        train(model_path, learning_rate, batch_size)
 
     
 """

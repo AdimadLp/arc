@@ -110,9 +110,9 @@ def avg_graph(model_name, learning_rate, stats):
     fig, ax = plt.subplots()
 
     # Plot the moving averages
-    ax.plot(epochs_avg, correct_size_tests_avg, color='blue', label='Correct size tests (avg)')
-    ax.plot(epochs_avg, visualizable_tests_avg, color='red', label='Visualizable tests (avg)')
-    ax.plot(epochs_avg, difference_avg, color='purple', label='Difference between correct size and visualizable tests (avg)')
+    ax.plot(epochs_avg, correct_size_tests_avg, color='blue', label='Correct size tests')
+    ax.plot(epochs_avg, visualizable_tests_avg, color='red', label='Visualizable tests')
+    ax.plot(epochs_avg, difference_avg, color='purple', label='Difference between correct size and visualizable tests')
 
     # Set the title
     ax.set_title("Moving Average of Model Performance Metrics Over Epochs")
