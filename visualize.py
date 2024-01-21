@@ -10,6 +10,7 @@ import pandas as pd
 def heatmap(graph_name, data, temperature, iteration=1):
     print(f"Visualizing example {iteration} of model {graph_name} with temperature {temperature}")
 
+    # Create a grid of subplots
     figure, axis = plt.subplots(len(data), 2)
     # Iterate over each item in the data list
     for i in range(0, len(data)):
@@ -21,14 +22,14 @@ def heatmap(graph_name, data, temperature, iteration=1):
         # Create a heatmap of the input data
         axis[i, 0].imshow(input, cmap='rainbow')
 
-        # Hide x-axis and y-axis ticks
+        # Hide x-axis and y-axis ticks of the input heatmap
         axis[i, 0].set_xticks([])
         axis[i, 0].set_yticks([])
 
         # Create a heatmap of the output data
         axis[i, 1].imshow(output, cmap='rainbow')
 
-        # Hide x-axis and y-axis ticks
+        # Hide x-axis and y-axis ticks of the output heatmap
         axis[i, 1].set_xticks([])
         axis[i, 1].set_yticks([])
 
@@ -132,28 +133,3 @@ def avg_graph(model_name, learning_rate, stats):
 
     # Close the figure
     plt.close(fig)
-
-if __name__ == '__main__':
-    model_path = 'gpt2'
-    learning_rate = 2e-05
-    with open(f'stats/{model_path}_{learning_rate}.json', 'r') as file:
-        stats = json.load(file)
-    graph(model_path, learning_rate, stats)
-    avg_graph(model_path, learning_rate, stats)
-
-"""
-    top_k = 30
-    for k in range(1, 6+1):
-        top_p = 0.90
-        for l in range(1, 5+1):
-            for i in range(1, 5+1):
-                        result = test_gpt2.test_model(model, tokenizer, device, top_k=top_k, top_p=top_p)
-                        # Check if the result is not empty
-                        if not result:
-                            continue
-                        # Parse the JSON string to a Python list
-                        data = json.loads(result)
-                        visualize(model_path,data, i, top_k=top_k, top_p=top_p)
-            top_p += 0.01
-        top_k += 5
-"""

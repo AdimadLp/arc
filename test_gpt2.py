@@ -3,28 +3,29 @@ import json
 import os
 import torch
 
-def load_model(model_path):
-    model = GPT2LMHeadModel.from_pretrained(model_path)
-    return model
-
-def load_tokenizer(tokenizer_path):
-    tokenizer = GPT2Tokenizer.from_pretrained(tokenizer_path)
-    return tokenizer
-
+# Function to generate test cases from a trained model for the ARC dataset
 def test_model(model, tokenizer, device, temperature):
     print(f'create test cases with temperature {temperature}')
+
+    # Set the model to evaluation mode
     model.eval()
+
+    # Skip gradient calculation during evaluation to reduce memory usage and speed up computation
     with torch.no_grad():
+        # Load the test file
         with open(os.path.join('test', '0c786b71.json'), 'r') as file:
             test_file = json.load(file)
         
+        # Convert the test file to a string
         def test_task_to_string(task):
             pairs = task['train'] + task.get('test', [])
             return '\n'.join(f"Input: {pair['input']} Output: {pair.get('output', '[[')}" for pair in pairs)
 
         test_str = test_task_to_string(test_file)
+        # Tokenize the test string
         tokenized_data = tokenizer(test_str, return_tensors="pt", truncation=True, max_length=tokenizer.model_max_length)
         
+        # Generate test cases
         outputs = model.generate(
             tokenized_data['input_ids'].to(device),
             do_sample=True,
@@ -32,8 +33,11 @@ def test_model(model, tokenizer, device, temperature):
             pad_token_id=model.config.eos_token_id,
             temperature=temperature,
         )
+
+        # Decode the generated outputs
         generated = tokenizer.decode(outputs[0], skip_special_tokens=True)
         
+        # Function to evaluate the generated test cases
         def evaluate(result):
             # Split the result string into separate data points
             data_points = result.split("\n")
@@ -41,10 +45,11 @@ def test_model(model, tokenizer, device, temperature):
             # Initialize an empty list to store the data
             data = []
 
-            # size of the first output array
+            # Size of the first output array
             x_axis_size = 0
             y_axis_size = 0
-            # Iterate over the data points, exccept the last one which is not a valid data point
+
+            # Iterate over the data points
             for i, data_point in enumerate(data_points):
                 # Split the data point into input and output parts
                 parts = data_point.split(" Output: ")
@@ -55,7 +60,7 @@ def test_model(model, tokenizer, device, temperature):
                 input_data = json.loads(input_part)
                 output_data = json.loads(output_part)
 
-                # set the size of the first output array
+                # Set the size of the first output array
                 if i == 0:
                     x_axis_size = len(output_data[0])
                     y_axis_size = len(output_data)
@@ -81,6 +86,7 @@ def test_model(model, tokenizer, device, temperature):
 
             return json_data
         
+        # Evaluate the generated test cases and return the result as a JSON-formatted string or an error message
         try:
             return evaluate(generated)
         except json.decoder.JSONDecodeError:
@@ -91,8 +97,9 @@ def test_model(model, tokenizer, device, temperature):
             return 'invalid output'
         
 if __name__ == '__main__':
+    # Can be used to generate additional test cases during training
     path = 'gpt2_2e-05_240'
     device = torch.device("cpu")
-    model = load_model(path).to(device)
-    tokenizer = load_tokenizer(path)
+    model = GPT2LMHeadModel.from_pretrained(path).to(device)
+    tokenizer = GPT2Tokenizer.from_pretrained(path)
     test_model(model, tokenizer, device)

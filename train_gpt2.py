@@ -68,7 +68,7 @@ def train(model_path, learning_rate, batch_size, model_name=None, stats=[]):
     tokenizer.pad_token = tokenizer.eos_token
     print("Tokenizer loaded")
 
-    # specify how the dataloader should combine input_ids and attention_masks into batches
+    # Specify how the dataloader should combine input_ids and attention_masks into batches
     def collate_batch(batch):
         input_ids, attention_masks = zip(*batch)
         input_ids_padded = pad_sequence(input_ids, batch_first=True, padding_value=tokenizer.pad_token_id)
@@ -142,7 +142,7 @@ def train(model_path, learning_rate, batch_size, model_name=None, stats=[]):
                 for i in range(1, 3+1):
                             result = test_gpt2.test_model(model, tokenizer, device, temperature)
 
-                            # check for different result types
+                            # Check for different result types
                             if result == 'invalid output':
                                 continue
                             elif result == 'invalid x-axis size':
@@ -157,7 +157,7 @@ def train(model_path, learning_rate, batch_size, model_name=None, stats=[]):
                                 data = json.loads(result)
                                 visualize.heatmap(f"{model_name}_{learning_rate}_{epoch}", data, round(temperature,2), i)
                 
-                # increase temperature to generate more diverse tests
+                # Increase temperature to generate more diverse tests
                 temperature += 0.1
 
         # Save model and tokenizer after each epoch to be able to continue training later
@@ -176,19 +176,20 @@ def train(model_path, learning_rate, batch_size, model_name=None, stats=[]):
             'correct_size_tests': correct_size_tests,
             'visualizable_tests': visualizable_tests
         })
-        # update the statistics file
+        # Update the statistics file
         os.makedirs(f'stats', exist_ok=True)
         with open(f'stats/{model_name}_{learning_rate}.json', 'w') as file:
             json.dump(stats, file)
             
 
 if __name__ == '__main__':
+    # Command line arguments to continue training a model
     argParser = argparse.ArgumentParser()
     argParser.add_argument("-c", "--continue_training", help="continue the training of a model")
-
     args = argParser.parse_args()
 
     if args.continue_training:
+        # Start training GPT-2 model from a previous training
         model_path = args.continue_training
         learning_rate = float(model_path.split('_')[-1])
         batch_size = 1
@@ -199,22 +200,8 @@ if __name__ == '__main__':
 
         train(model_path, learning_rate, batch_size, model_name=parent_model, stats=stats)
     else:
+        # Start training GPT-2 model from scratch with default parameters
         model_path = 'gpt2'
         learning_rate = 5e-5
         batch_size = 1
         train(model_path, learning_rate, batch_size)
-
-    
-"""
-# Evaluate model every epoch
-model.eval()
-with torch.no_grad():
-    total_loss = 0
-    for step, batch in enumerate(val_loader, start=1):
-        inputs, masks = batch
-        inputs, masks = inputs.to(device), masks.to(device)
-
-        outputs = model(input_ids=inputs, attention_mask=masks, labels=inputs)
-        loss = outputs.loss
-        total_loss += loss.item()
-    print(f"Validation loss: {total_loss / step}")"""
