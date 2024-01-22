@@ -11,6 +11,8 @@ https://medium.com/@adimadlp/exploring-ais-complexities-unraveling-llms-abstract
 
 ## Installation on your own hardware (linux)
 
+- [NVIDEA CUDA Toolkit](https://developer.nvidia.com/cuda-downloads)
+
 ```bash
 python3 pip install torch numpy transformers matplotlib seaborn
 ```
