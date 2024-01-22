@@ -22,7 +22,7 @@ python3 pip install torch numpy transformers matplotlib seaborn
 ```
 
 ### On your own Hardware (windows)
-- See this [Tutorial](https://thesecmaster.com/step-by-step-guide-to-setup-pytorch-for-your-gpu-on-windows-10-11/)
+- Follow this [Tutorial](https://thesecmaster.com/step-by-step-guide-to-setup-pytorch-for-your-gpu-on-windows-10-11/)
 
 ## Usage
 
@@ -39,4 +39,4 @@ python3 train_gpt2.py -c CHECKPOINT_FOLDERNAME
 ```
 (e.g. CHECKPOINT_FOLDERNAME = gpt2_5e-05)
 ### On Google Colab
-Use the prepared [Notebook](colab_training.ipynb)
+Open the prepared [Notebook](colab_training.ipynb) in Colab
