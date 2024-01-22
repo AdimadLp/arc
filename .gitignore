@@ -5,3 +5,5 @@
 /plots/
 # ignore __pycache__ directory
 __pycache__/
+# ignore virtual environment directory
+/venv/
