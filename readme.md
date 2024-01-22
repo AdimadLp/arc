@@ -38,5 +38,12 @@ python3 train_gpt2.py
 python3 train_gpt2.py -c CHECKPOINT_FOLDERNAME
 ```
 (e.g. CHECKPOINT_FOLDERNAME = gpt2_5e-05)
+
 ### On Google Colab
-Open the prepared [Notebook](colab_training.ipynb) in Colab and choose GPU Hardware accelerator
+- Open the prepared [Notebook](colab_training.ipynb) in Colab and choose GPU Hardware accelerator
+- Mount to your Google Drive to save checkpoints
+- Copy your checkpoint destination folder starting with "/content/drive/MyDrive"
+- Paste it in 
+```python
+train.train(model_path, learning_rate, batch_size, google_drive_path="/content/drive/MyDrive")
+```
