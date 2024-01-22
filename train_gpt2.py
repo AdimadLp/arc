@@ -8,12 +8,12 @@ The trained model and tokenizer are saved, and the training statistics are recor
 import torch
 from torch.utils.data import Dataset, DataLoader
 from torch.nn.utils.rnn import pad_sequence
-from transformers import GPT2LMHeadModel, GPT2Tokenizer
 import json
 import os
-import test_gpt2
+import test
 import visualize
 import argparse
+import config
 
 # Function to load ARC tasks from a directory
 def load_arc_data(directory):
@@ -63,11 +63,9 @@ def train(model_path, learning_rate, batch_size, model_name=None, stats=[], goog
         epoch = stats[-1]['epoch']
     
     print(f"model_path: {model_path}\nlearning_rate: {learning_rate}\nbatch_size: {batch_size}\nmodel_name: {model_name}\nepoch: {epoch}")
-    tokenizer = GPT2Tokenizer.from_pretrained(model_path)
 
-    # Set the padding token to be the same as the end-of-sentence (EOS) token for the tokenizer.
-    tokenizer.pad_token = tokenizer.eos_token
-    print("Tokenizer loaded")
+    # Load tokenizer
+    tokenizer = config.get_tokenizer(model_path)
 
     # Specify how the dataloader should combine input_ids and attention_masks into batches
     def collate_batch(batch):
@@ -80,7 +78,7 @@ def train(model_path, learning_rate, batch_size, model_name=None, stats=[], goog
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
     # Load model and move it to the device
-    model = GPT2LMHeadModel.from_pretrained(model_path)
+    model = config.get_model(model_path)
     model.resize_token_embeddings(len(tokenizer))
     model.to(device)
     print("Model loaded")
@@ -141,7 +139,7 @@ def train(model_path, learning_rate, batch_size, model_name=None, stats=[], goog
         temperature = 0.1
         for t in range(0, 10):
                 for i in range(1, 3+1):
-                            result = test_gpt2.test_model(model, tokenizer, device, temperature)
+                            result = test.test_model(model, tokenizer, device, temperature)
 
                             # Check for different result types
                             if result == 'invalid output':

@@ -2,7 +2,7 @@ import torch
 import matplotlib.pyplot as plt
 import json
 import os
-import test_gpt2
+import test
 import numpy as np
 import seaborn as sns
 import pandas as pd

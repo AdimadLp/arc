@@ -1,7 +1,7 @@
-from transformers import GPT2LMHeadModel, GPT2Tokenizer
 import json
 import os
 import torch
+import config
 
 # Function to generate test cases from a trained model for the ARC dataset
 def test_model(model, tokenizer, device, temperature):
@@ -98,8 +98,8 @@ def test_model(model, tokenizer, device, temperature):
         
 if __name__ == '__main__':
     # Can be used to generate additional test cases during training
-    path = 'gpt2_2e-05_240'
+    path = 'gpt2_5e-05'
     device = torch.device("cpu")
-    model = GPT2LMHeadModel.from_pretrained(path).to(device)
-    tokenizer = GPT2Tokenizer.from_pretrained(path)
+    model = config.get_model(path).to(device)
+    tokenizer = config.get_tokenizer(path)
     test_model(model, tokenizer, device)
