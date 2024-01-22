@@ -46,11 +46,11 @@ python3 train_gpt2.py -c CHECKPOINT_FOLDERNAME
 - Copy your checkpoint destination folder starting with "/content/drive/MyDrive"
 - Paste it in 
 ```python
-train_gpt2.train(model_path, learning_rate, batch_size, google_drive_path="/content/drive/MyDrive")
+train.train(model_path, learning_rate, batch_size, google_drive_path="/content/drive/MyDrive")
 ```
 ### Change base Model
+- Change the base model in the config file
 ```diff
-# Change the base model in the config file
 # e.g. from GPT2 -> Bert
 
 # Change imports
@@ -65,4 +65,8 @@ train_gpt2.train(model_path, learning_rate, batch_size, google_drive_path="/cont
 - tokenizer = GPT2Tokenizer.from_pretrained(model_path)
 - tokenizer.pad_token = tokenizer.eos_token
 + tokenizer = BertTokenizer.from_pretrained(model_path)
+```
+- Change the model_path
+```python
+model_path = 'bert-base-uncased'
 ```
