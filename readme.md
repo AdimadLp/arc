@@ -38,5 +38,17 @@ python3 train_gpt2.py
 python3 train_gpt2.py -c CHECKPOINT_FOLDERNAME
 ```
 (e.g. CHECKPOINT_FOLDERNAME = gpt2_5e-05)
+
+```bash
+# Change the base model
+# e.g. from GPT2 -> Bert
+
+
+```
+```diff
+    def get_model(model_path):
+        - model = GPT2LMHeadModel.from_pretrained(model_path)
+        + model = BertModel.from_pretrained(model_path)
+```
 ### On Google Colab
 Open the prepared [Notebook](colab_training.ipynb) in Colab and choose GPU Hardware accelerator
