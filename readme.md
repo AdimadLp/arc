@@ -39,4 +39,4 @@ python3 train_gpt2.py -c CHECKPOINT_FOLDERNAME
 ```
 (e.g. CHECKPOINT_FOLDERNAME = gpt2_5e-05)
 ### On Google Colab
-Open the prepared [Notebook](colab_training.ipynb) in Colab
+Open the prepared [Notebook](colab_training.ipynb) in Colab and choose GPU Hardware accelerator
