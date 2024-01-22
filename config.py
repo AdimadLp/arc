@@ -13,3 +13,17 @@ def get_tokenizer(model_path):
     tokenizer.pad_token = tokenizer.eos_token
     print("Tokenizer loaded")
     return tokenizer
+
+'''
+from transformers import BertTokenizer, BertModel
+
+def get_model(model_path):
+    model = BertModel.from_pretrained(model_path)
+    print("Model loaded")
+    return model
+
+def get_tokenizer(model_path):
+    tokenizer = BertTokenizer.from_pretrained(model_path)
+    print("Tokenizer loaded")
+    return tokenizer
+'''

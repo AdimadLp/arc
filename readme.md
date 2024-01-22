@@ -11,6 +11,7 @@ This is the code of the Medium post [Exploring AI’s Complexities: Unraveling L
 - [Usage](#usage)
     - [Use on your own Hardware](#on-your-own-hardware)
     - [Use on Google Colab](#on-google-colab)
+    - [Change base Model](#change-base-model)
 
 ## Installation
 ### On your own Hardware (linux)
@@ -39,21 +40,29 @@ python3 train_gpt2.py -c CHECKPOINT_FOLDERNAME
 ```
 (e.g. CHECKPOINT_FOLDERNAME = gpt2_5e-05)
 
-```bash
-
-
-
+### On Google Colab
+- Open the prepared [Notebook](colab_training.ipynb) in Colab and choose GPU Hardware accelerator
+- Mount to your Google Drive to save checkpoints
+- Copy your checkpoint destination folder starting with "/content/drive/MyDrive"
+- Paste it in 
+```python
+train_gpt2.train(model_path, learning_rate, batch_size, google_drive_path="/content/drive/MyDrive")
 ```
+### Change base Model
 ```diff
 # Change the base model in the config file
 # e.g. from GPT2 -> Bert
+
+# Change imports
 - from transformers import GPT2LMHeadModel, GPT2Tokenizer
 + from transformers import BertTokenizer, BertModel
+
+# Change get_model
 - model = GPT2LMHeadModel.from_pretrained(model_path)
 + model = BertModel.from_pretrained(model_path)
+
+# Change get_tokenizer
 - tokenizer = GPT2Tokenizer.from_pretrained(model_path)
 - tokenizer.pad_token = tokenizer.eos_token
 + tokenizer = BertTokenizer.from_pretrained(model_path)
 ```
-### On Google Colab
-Open the prepared [Notebook](colab_training.ipynb) in Colab and choose GPU Hardware accelerator
