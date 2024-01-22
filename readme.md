@@ -35,7 +35,7 @@ python3 train_gpt2.py
 ```
 ```bash
 # Continue the training from checkpoint
-python3 train_gpt2.py -c FOLDERNAME
+python3 train_gpt2.py -c CHECKPOINT_FOLDERNAME
 ```
 
 ### On google colab
