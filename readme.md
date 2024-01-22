@@ -18,7 +18,8 @@ python3 pip install torch numpy transformers matplotlib seaborn
 ```
 
 ## Installation on your own hardware (windows)
-https://thesecmaster.com/step-by-step-guide-to-setup-pytorch-for-your-gpu-on-windows-10-11/
+- See this [tutorial](https://thesecmaster.com/step-by-step-guide-to-setup-pytorch-for-your-gpu-on-windows-10-11/)
+
 ## Usage
 
 Here are examples of how to use this project:
