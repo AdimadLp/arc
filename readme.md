@@ -8,7 +8,8 @@ This is the code of the Medium post [Exploring AI’s Complexities: Unraveling L
 - [Installation](#installation)
 - [Usage](#usage)
 
-## Installation on your own hardware (linux)
+## Installation
+### On your own hardware (linux)
 
 - [NVIDEA CUDA Toolkit](https://developer.nvidia.com/cuda-downloads)
 
@@ -16,7 +17,7 @@ This is the code of the Medium post [Exploring AI’s Complexities: Unraveling L
 python3 pip install torch numpy transformers matplotlib seaborn
 ```
 
-## Installation on your own hardware (windows)
+### On your own hardware (windows)
 - See this [tutorial](https://thesecmaster.com/step-by-step-guide-to-setup-pytorch-for-your-gpu-on-windows-10-11/)
 
 ## Usage
