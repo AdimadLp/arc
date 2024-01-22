@@ -46,9 +46,8 @@ python3 train_gpt2.py -c CHECKPOINT_FOLDERNAME
 
 ```
 ```diff
-    def get_model(model_path):
-        - model = GPT2LMHeadModel.from_pretrained(model_path)
-        + model = BertModel.from_pretrained(model_path)
+    - model = GPT2LMHeadModel.from_pretrained(model_path)
+    + model = BertModel.from_pretrained(model_path)
 ```
 ### On Google Colab
 Open the prepared [Notebook](colab_training.ipynb) in Colab and choose GPU Hardware accelerator
