@@ -46,10 +46,13 @@ class ArcDataset(Dataset):
         return self.data[idx]
 
 # Function to train a GPT-2 model on the ARC dataset
-def train(model_path, learning_rate, batch_size, model_name=None, stats=[]):
+def train(model_path, learning_rate, batch_size, model_name=None, stats=[], google_drive_path=""):
     # Set model_name to model_path if the training is not a continuation of a previous training
     if model_name is None:
         model_name = model_path
+
+    if google_drive_path != "":
+        google_drive_path = f'{google_drive_path}/'
 
     # If the training is a continuation of a previous training, load the stats
     if stats == []:
@@ -58,8 +61,6 @@ def train(model_path, learning_rate, batch_size, model_name=None, stats=[]):
     else:
         # Get the last epoch from stats
         epoch = stats[-1]['epoch']
-        # Get the max correct size tests from stats
-        max_correct_size_tests = max([stat['correct_size_tests'] for stat in stats])
     
     print(f"model_path: {model_path}\nlearning_rate: {learning_rate}\nbatch_size: {batch_size}\nmodel_name: {model_name}\nepoch: {epoch}")
     tokenizer = GPT2Tokenizer.from_pretrained(model_path)
@@ -138,7 +139,7 @@ def train(model_path, learning_rate, batch_size, model_name=None, stats=[]):
         
         # Evaluate model every epoch by generating 5 tests called from test data '0c786b71.json' and visualize them
         temperature = 0.1
-        for t in range(1, 10+1):
+        for t in range(0, 10):
                 for i in range(1, 3+1):
                             result = test_gpt2.test_model(model, tokenizer, device, temperature)
 
@@ -162,8 +163,8 @@ def train(model_path, learning_rate, batch_size, model_name=None, stats=[]):
 
         # Save model and tokenizer after each epoch to be able to continue training later
         print(f"Saving model...")
-        model.save_pretrained(f'{model_name}_{learning_rate}')
-        tokenizer.save_pretrained(f'{model_name}_{learning_rate}')
+        model.save_pretrained(f'{google_drive_path}{model_name}_{learning_rate}')
+        tokenizer.save_pretrained(f'{google_drive_path}{model_name}_{learning_rate}')
         print(f"Model saved")
 
         # Visualize the statistics
@@ -177,8 +178,8 @@ def train(model_path, learning_rate, batch_size, model_name=None, stats=[]):
             'visualizable_tests': visualizable_tests
         })
         # Update the statistics file
-        os.makedirs(f'stats', exist_ok=True)
-        with open(f'stats/{model_name}_{learning_rate}.json', 'w') as file:
+        os.makedirs(f'{google_drive_path}stats', exist_ok=True)
+        with open(f'{google_drive_path}stats/{model_name}_{learning_rate}.json', 'w') as file:
             json.dump(stats, file)
             
 

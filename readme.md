@@ -10,7 +10,7 @@ This is the code of the Medium post [Exploring AI’s Complexities: Unraveling L
     - [Installation on your own Hardware (windows)](#on-your-own-hardware-windows)
 - [Usage](#usage)
     - [Use on your own Hardware](#on-your-own-hardware)
-    - [Use on google colab](#on-google-colab)
+    - [Use on Google Colab](#on-google-colab)
 
 ## Installation
 ### On your own Hardware (linux)
@@ -38,4 +38,4 @@ python3 train_gpt2.py
 python3 train_gpt2.py -c CHECKPOINT_FOLDERNAME
 ```
 (e.g. CHECKPOINT_FOLDERNAME = gpt2_5e-05)
-### On google colab
+### On Google Colab
