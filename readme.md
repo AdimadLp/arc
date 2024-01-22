@@ -6,11 +6,11 @@ This is the code of the Medium post [Exploring AI’s Complexities: Unraveling L
 ## Table of Contents
 
 - [Installation](#installation)
--- [Installation on your own Hardware (linux)](#on-your-own-hardware-linux)
--- [[Installation on your own Hardware (windows)](#on-your-own-hardware-windows)]
+--* [Installation on your own Hardware (linux)](#on-your-own-hardware-linux)
+--* [[Installation on your own Hardware (windows)](#on-your-own-hardware-windows)]
 - [Usage](#usage)
--- [Use on your own Hardware](#on-your-own-hardware)
--- [Use on google colab](#on-google-colab)
+--* [Use on your own Hardware](#on-your-own-hardware)
+--* [Use on google colab](#on-google-colab)
 
 ## Installation
 ### On your own Hardware (linux)
