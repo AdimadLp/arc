@@ -37,5 +37,5 @@ python3 train_gpt2.py
 # Continue the training from checkpoint
 python3 train_gpt2.py -c CHECKPOINT_FOLDERNAME
 ```
-
+(e.g. CHECKPOINT_FOLDERNAME = gpt2_5e-05)
 ### On google colab
