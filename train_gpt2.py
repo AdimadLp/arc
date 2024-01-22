@@ -167,10 +167,6 @@ def train(model_path, learning_rate, batch_size, model_name=None, stats=[], goog
         tokenizer.save_pretrained(f'{google_drive_path}{model_name}_{learning_rate}')
         print(f"Model saved")
 
-        # Visualize the statistics
-        visualize.graph(model_name, learning_rate, stats)
-        visualize.avg_graph(model_name, learning_rate, stats)
-
         # Save the statistics for this epoch
         stats.append({
             'epoch': epoch,
@@ -182,6 +178,10 @@ def train(model_path, learning_rate, batch_size, model_name=None, stats=[], goog
         with open(f'{google_drive_path}stats/{model_name}_{learning_rate}.json', 'w') as file:
             json.dump(stats, file)
             
+        # Visualize the statistics
+        visualize.graph(model_name, learning_rate, stats)
+        visualize.avg_graph(model_name, learning_rate, stats)
+
 
 if __name__ == '__main__':
     # Command line arguments to continue training a model
