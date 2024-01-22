@@ -9,11 +9,14 @@ https://medium.com/@adimadlp/exploring-ais-complexities-unraveling-llms-abstract
 - [Installation](#installation)
 - [Usage](#usage)
 
-## Installation on your own hardware
+## Installation on your own hardware (linux)
 
 ```bash
 python3 pip install torch numpy transformers matplotlib seaborn
 ```
+
+## Installation on your own hardware (windows)
+https://thesecmaster.com/step-by-step-guide-to-setup-pytorch-for-your-gpu-on-windows-10-11/
 ## Usage
 
 Here are examples of how to use this project:
