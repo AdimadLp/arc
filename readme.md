@@ -2,7 +2,7 @@
 
 ## Description
 
-This is the code of the Medium post [Exploring AI’s Complexities: Unraveling LLMs Abstract Thinking with ARC](https://medium.com/@adimadlp/exploring-ais-complexities-unraveling-llms-abstract-thinking-with-arc-20f94826207ci)
+This is the code of the Medium post [Exploring AI’s Complexities: Unraveling LLMs Abstract Thinking with ARC]([https://medium.com/@adimadlp/exploring-ais-complexities-unraveling-llms-abstract-thinking-with-arc-20f94826207ci](https://medium.com/@adimadlp/exploring-ais-complexities-unraveling-llms-abstract-thinking-with-arc-ea9cfc193cfa))
 ## Table of Contents
 
 - [Installation](#installation)
